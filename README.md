@@ -97,6 +97,160 @@ Opt-in (not installed - each adds tool-list context cost):
 
 Rule of thumb: 3-6 servers max, and only when a real need shows up.
 
+## Stack suggestions
+
+Recipes per project type. All snippets are `opencode.json`-ready and assume context7 + Serena (the template defaults) are already present. Skills install via the [skills registry](https://skills.sh) and land in `.agents/skills/` — cheap, since skills load on demand. MCP servers add permanent tool context, so add only what the project actually needs.
+
+### Fullstack (Next.js/TypeScript + API + database)
+
+| MCP | Why | Cost |
+| --- | --- | --- |
+| Playwright | Agent verifies its own UI changes in a real browser | Medium |
+| Postgres MCP Pro | Schema + safe SQL; pair with a read-only DB role | Low-Med |
+| GitHub (official) | PRs/issues/Actions without leaving the session | High - `ask`-gate it |
+| Sentry | Errors with full stack-trace context | Medium |
+
+```json
+{
+  "mcp": {
+    "playwright": { "type": "local", "command": ["npx", "@playwright/mcp@latest"] },
+    "postgres": {
+      "type": "local",
+      "command": ["postgres-mcp", "--access-mode=restricted", "{env:DATABASE_URI}"],
+      "timeout": 15000
+    },
+    "github": { "type": "remote", "url": "https://api.githubcopilot.com/mcp", "oauth": {} },
+    "sentry": { "type": "remote", "url": "https://mcp.sentry.dev/mcp", "oauth": {} }
+  }
+}
+```
+
+Install `postgres-mcp` once: `uv tool install postgres-mcp` (or `pipx install postgres-mcp`). Put the connection string in `.env` as `DATABASE_URI` and use a DB role with only `CONNECT`/`USAGE`/`SELECT`. **Never use the archived `@modelcontextprotocol/server-postgres`** - deprecated in 2025 after a SQL injection finding.
+
+```powershell
+npx skills add vercel-labs/agent-skills --skill react-best-practices
+npx skills add vercel-labs/agent-skills --skill composition-patterns
+npx skills add better-auth/skills        # only if using Better Auth
+```
+
+### Frontend
+
+| MCP | Why | Cost |
+| --- | --- | --- |
+| Playwright | E2E verification driven via the accessibility tree | Medium |
+| Chrome DevTools | Live console/network/perf traces on a running app | Medium |
+
+```json
+{
+  "mcp": {
+    "playwright": { "type": "local", "command": ["npx", "@playwright/mcp@latest"] },
+    "chrome-devtools": { "type": "local", "command": ["npx", "chrome-devtools-mcp@latest"] }
+  }
+}
+```
+
+```powershell
+npx skills add vercel-labs/agent-skills --skill react-best-practices
+npx skills add vercel-labs/agent-skills --skill web-design-guidelines
+npx skills add anthropics/skills --skill frontend-design   # avoids generic AI-looking UI
+```
+
+### Backend / API
+
+| MCP | Why | Cost |
+| --- | --- | --- |
+| Postgres MCP Pro | Query plans, health checks, safe read-only SQL | Low-Med |
+| Sentry | Production error triage | Medium |
+| Firecrawl (hosted, keyless) | `firecrawl_developer_search` - semantic search over PRs/issues/docs; see firecrawl.dev for the endpoint | Low |
+
+Docker: enable via Docker Desktop's built-in MCP toolkit instead of adding a server here.
+
+```json
+{
+  "mcp": {
+    "postgres": {
+      "type": "local",
+      "command": ["postgres-mcp", "--access-mode=restricted", "{env:DATABASE_URI}"]
+    },
+    "sentry": { "type": "remote", "url": "https://mcp.sentry.dev/mcp", "oauth": {} }
+  }
+}
+```
+
+The vendored `tdd` skill already covers test-first backend work. For framework-specific skills there is no dominant first-party set - search: `npx skills find fastapi` / `django` / `nestjs`.
+
+### Android (native)
+
+| MCP | Why | Cost |
+| --- | --- | --- |
+| replicant-mcp | Token-optimized (progressive disclosure) - fits the template's context budget | Medium |
+| androidbuild-mcp | Alternative: compact `file:line` build errors, emulator control | Medium |
+
+Prereqs: Android SDK (`ANDROID_HOME`), JDK 17+, Node 18+. Run the server's `doctor` tool first - it reports exactly what is missing. On smaller toolchains, `adb` via Bash is often enough.
+
+```json
+{
+  "mcp": {
+    "replicant": { "type": "local", "command": ["npx", "-y", "replicant-mcp"], "timeout": 30000 }
+  }
+}
+```
+
+No first-party Kotlin/Compose skills yet: `npx skills find kotlin` and `npx skills find jetpack compose`, install only what has real install counts.
+
+### React Native / Expo
+
+| MCP | Why | Cost |
+| --- | --- | --- |
+| Expo MCP | Dev server, logs, update workflows | Medium |
+
+```powershell
+npx skills add vercel-labs/agent-skills --skill react-native-guidelines
+npx skills find expo        # Expo publishes a suite of first-party skills - pick what you use
+```
+
+### Python / data
+
+| MCP | Why | Cost |
+| --- | --- | --- |
+| Jupyter MCP (Datalayer) | Real-time notebook cell editing/execution from the agent; hosted keyless alternative at `mcp.datalayer.run/mcp` | Low-Med |
+| Postgres MCP Pro | If data lives in Postgres | Low-Med |
+| mcp-data-science | 102 pipeline tools (EDA -> modeling). **102 tools = heavy context cost - opt-in only, when you truly work tabular-data-first** | High |
+
+```json
+{
+  "mcp": {
+    "jupyter": {
+      "type": "local",
+      "command": ["uvx", "jupyter-mcp-server"],
+      "environment": {
+        "JUPYTER_URL": "http://localhost:8888",
+        "JUPYTER_TOKEN": "{env:JUPYTER_TOKEN}"
+      }
+    },
+    "postgres": {
+      "type": "local",
+      "command": ["postgres-mcp", "--access-mode=restricted", "{env:DATABASE_URI}"]
+    }
+  }
+}
+```
+
+Notebooks: keep heavy modeling in scripts/modules and use notebooks for exploration - the gated `execute-task` workflow works far better on diffable Python files. Skill coverage is sparse: `npx skills find pandas` / `pytorch` / `<framework>`.
+
+### Agents
+
+Keep `planner` (read-only thinker) everywhere. Optional additions - each agent's tool list costs context, so add sparingly:
+
+- **reviewer** (subagent, read-only, loads `code-review`): any stack, run after `implement`
+- **ui-verifier** (subagent, Playwright access): frontend/fullstack - drives the browser to verify the change actually works
+
+### Safety notes
+
+- Databases: dedicated read-only role + `--access-mode=restricted`. The role is the boundary that holds; the flag is the second layer.
+- Credentials never in `opencode.json` (it is meant to be committed) - put them in `.env`, reference via `{env:...}`.
+- Device/emulator MCPs (Android): these control real software state - keep their destructive tools behind `ask` permissions if you enable them.
+
 ## Context-efficiency principles
 
 1. `AGENTS.md` is a router, never a manual. Details live in `docs/rules/` behind `@`-references the agent loads only when relevant.
