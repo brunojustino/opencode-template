@@ -1,0 +1,14 @@
+# Context
+
+<!-- One or two sentences: what this project is and why it exists. Fill in when the first term is settled. -->
+
+## Language
+
+<!-- Terms appear here one by one as grill-with-docs / domain-modeling sessions resolve them.
+     Format:
+
+**Term**:
+A one or two sentence definition of what it IS.
+_Avoid_: alternative words used for the same thing
+
+Keep it pure vocabulary: no implementation details, no specs. Only terms specific to this project's domain - not general programming concepts. -->
