@@ -32,12 +32,14 @@ docs/
 .\install.ps1 -Target C:\path\to\project
 ```
 
-The installer:
+The installer **backs up first, then merges** - nothing can be lost:
 
-- Copies `AGENTS.md`, `CONTEXT.md`, `docs/`, `.opencode/` - **skips any file that already exists** (safe for ongoing projects)
-- Creates `.env` from `.env.example` (never touches an existing `.env`)
-- Merges `mcp` + `permission` into an existing `opencode.json` (preserves your keys); creates it if absent; prints a manual snippet if you use `opencode.jsonc`
-- Sanity-checks the skill dependency chain and git repo; auto-installs Serena when `uv` is present
+- **Backup**: every existing file it touches is copied to `.template-backup\<timestamp>\<path>` before anything is written (re-runs create a new timestamped folder, never clobbering previous backups). Restore = copy files back.
+- **Merges**: `AGENTS.md` (your content preserved, template router appended inside `<!-- owt:start/end -->` markers - idempotent on re-runs), `CONTEXT.md` (ensures a `## Language` section; your terms untouched), `.gitignore` (appends missing entries), `opencode.json` (JSON merge, missing keys only, plus a `opencode.json.pre-install.bak`)
+- **Updates**: `.opencode/skills/**` and `.opencode/agent/` to the template version (old copies in the backup)
+- **Never writes**: your existing `docs/` files (created only if missing) and `.env` (backed up every run, never written - keys stay verbatim)
+- A write-guard aborts rather than overwriting any file that was not backed up in that run
+- Sanity-checks the skill dependency chain; auto-installs Serena when `uv` is present
 
 For a brand-new empty project you can also just copy the whole template folder.
 
