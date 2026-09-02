@@ -12,7 +12,8 @@ A drop-in kit for [opencode](https://opencode.ai) projects - new or ongoing - th
 AGENTS.md                  ~30-line router: points to rules, loads them lazily
 CONTEXT.md                 domain glossary (pure vocabulary)
 opencode.template.json     MCP servers + permissions (merged into opencode.json)
-install.ps1                non-destructive installer
+install.ps1                non-destructive installer (creates .env, installs Serena if uv present)
+.env.example               API key template (copied to .env; .env is gitignored)
 docs/
   rules/task-execution.md  the gated task loop (load-on-demand)
   rules/git-workflow.md    commit + docs-update conventions
@@ -34,8 +35,9 @@ docs/
 The installer:
 
 - Copies `AGENTS.md`, `CONTEXT.md`, `docs/`, `.opencode/` - **skips any file that already exists** (safe for ongoing projects)
+- Creates `.env` from `.env.example` (never touches an existing `.env`)
 - Merges `mcp` + `permission` into an existing `opencode.json` (preserves your keys); creates it if absent; prints a manual snippet if you use `opencode.jsonc`
-- Sanity-checks the skill dependency chain, git repo, and Serena CLI
+- Sanity-checks the skill dependency chain and git repo; auto-installs Serena when `uv` is present
 
 For a brand-new empty project you can also just copy the whole template folder.
 
@@ -81,8 +83,8 @@ Skills are vendored on purpose: versioned, auditable, offline. Update deliberate
 
 Enabled (both low context cost):
 
-- **context7** (remote, keyless): up-to-date library docs. Optional: set `CONTEXT7_API_KEY` env var and add `"headers": { "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}" }` for higher rate limits.
-- **Serena** (local): symbol-level code retrieval/editing - the agent reads symbols, not whole files. Requires [uv](https://docs.astral.sh/uv/getting-started/installation/): `uv tool install -p 3.13 serena-agent`. Skip it on small projects by setting `"enabled": false`.
+- **context7** (remote): up-to-date library docs. Key is wired by default to `{env:CONTEXT7_API_KEY}` from `.env` (the installer creates `.env` from `.env.example`). Empty = keyless, just rate-limited. Free key: https://context7.com
+- **Serena** (local): symbol-level code retrieval/editing - the agent reads symbols, not whole files. Needs no key. The installer auto-installs it via uv when missing (`uv tool install -p 3.13 serena-agent`); if uv itself is missing it prints the install link. Skip it on small projects by setting `"enabled": false`.
 
 Opt-in (not installed - each adds tool-list context cost):
 

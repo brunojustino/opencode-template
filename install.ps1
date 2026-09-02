@@ -74,6 +74,16 @@ Write-Host "Installing opencode workflow template into: $target" -ForegroundColo
 $items = @("AGENTS.md", "CONTEXT.md", "docs", ".opencode", ".gitignore")
 foreach ($i in $items) { Copy-TemplateItem -RelPath $i }
 
+# 1b. .env from .env.example (skip if exists - never overwrite real keys)
+$envExample = Join-Path $source ".env.example"
+$envFile = Join-Path $target ".env"
+if (Test-Path -LiteralPath $envFile) {
+  $skipped.Add(".env")
+} elseif (Test-Path -LiteralPath $envExample) {
+  Copy-Item -LiteralPath $envExample -Destination $envFile
+  $created.Add(".env")
+}
+
 # 2. opencode.json
 $ocJson = Join-Path $target "opencode.json"
 $ocJsonc = Join-Path $target "opencode.jsonc"
@@ -109,7 +119,18 @@ if (-not (Test-Path -LiteralPath (Join-Path $target ".git"))) {
 }
 $serena = Get-Command serena -ErrorAction SilentlyContinue
 if (-not $serena) {
-  Write-Warning "Serena CLI not found on PATH. Install: uv tool install -p 3.13 serena-agent"
+  $uv = Get-Command uv -ErrorAction SilentlyContinue
+  if ($uv) {
+    Write-Host "Serena CLI not found - installing via uv (may take a minute)..." -ForegroundColor Cyan
+    & uv tool install -p 3.13 serena-agent
+    if (Get-Command serena -ErrorAction SilentlyContinue) {
+      Write-Host "Serena installed successfully." -ForegroundColor Green
+    } else {
+      Write-Warning "Serena installed but 'serena' is not on PATH in this session - open a new shell, or add uv's tools bin to PATH."
+    }
+  } else {
+    Write-Warning "Serena CLI not found and uv is not installed. Install uv: https://docs.astral.sh/uv/getting-started/installation/ then run: uv tool install -p 3.13 serena-agent"
+  }
 }
 
 # 4. Report
@@ -122,6 +143,6 @@ if ($skipped.Count -gt 0) {
 }
 Write-Host ""
 Write-Host "Next steps:" -ForegroundColor Cyan
-Write-Host "  1. Optional: set CONTEXT7_API_KEY env var for higher Context7 rate limits (works keyless too)."
+Write-Host "  1. Edit .env to set CONTEXT7_API_KEY (optional - keyless works, just rate-limited)."
 Write-Host "  2. Fill the placeholders in AGENTS.md (commands) and CONTEXT.md intro."
 Write-Host "  3. Start opencode in this project; try /grill-with-docs on your next plan."
