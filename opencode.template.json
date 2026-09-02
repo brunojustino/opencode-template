@@ -1,5 +1,24 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "plan": {
+      "permission": {
+        "serena_replace_content": "deny",
+        "serena_replace_in_files": "deny",
+        "serena_replace_symbol_body": "deny",
+        "serena_insert_after_symbol": "deny",
+        "serena_insert_before_symbol": "deny",
+        "serena_rename_symbol": "deny",
+        "serena_delete_lines": "deny",
+        "serena_replace_lines": "deny",
+        "serena_insert_at_line": "deny",
+        "serena_write_memory": "deny",
+        "serena_delete_memory": "deny",
+        "serena_rename_memory": "deny",
+        "serena_edit_memory": "deny"
+      }
+    }
+  },
   "mcp": {
     "context7": {
       "type": "remote",
@@ -16,6 +35,7 @@
     }
   },
   "permission": {
+    "doom_loop": "ask",
     "bash": {
       "git add*": "allow",
       "git commit*": "allow",
