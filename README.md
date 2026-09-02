@@ -22,6 +22,8 @@ docs/
   templates/               ADR template
 .opencode/
   agent/planner.md         read-only planning agent
+  agent/arch-analyzer.md   read-only architecture-analysis subagent
+  command/                 /analyze-architecture entry point
   skills/                  10 skills, committed and auditable
 ```
 
@@ -53,6 +55,7 @@ For a brand-new empty project you can also just copy the whole template folder.
 ```
 
 - `execute-task` is the enforcement point: one task, one approval, one commit.
+- `/analyze-architecture` is the onboarding point for existing codebases: it explores the project (via parallel read-only `arch-analyzer` subagents) and writes `docs/architecture/` - re-runnable, it refreshes only what changed since the last analysis.
 - ADRs are only written for decisions that are hard to reverse, surprising without context, and a real trade-off. Most sessions produce zero - that is by design.
 - Push always requires explicit approval (`git push*` permission is `ask`).
 
@@ -71,6 +74,7 @@ All committed under `.opencode/skills/` (source: [mattpocock/skills](https://git
 | `tdd` | Red-green-refactor reference |
 | `code-review` | Two-axis review of a diff |
 | `execute-task` | **Custom**: the gated per-task execution loop |
+| `analyze-architecture` | **Custom**: analyze the codebase and create/refresh `docs/architecture/` (overview, components, data flow, constraints - with Mermaid). Run `/analyze-architecture` after installing into a new project |
 
 ### Updating skills
 

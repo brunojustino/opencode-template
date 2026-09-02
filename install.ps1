@@ -255,7 +255,7 @@ if (Test-Path -LiteralPath $ocJsonc) {
 }
 
 # --- 3. sanity checks -----------------------------------------------------------
-$required = @("grill-with-docs", "grilling", "domain-modeling", "to-spec", "to-tickets", "implement", "code-review", "tdd", "execute-task")
+$required = @("grill-with-docs", "grilling", "domain-modeling", "to-spec", "to-tickets", "implement", "code-review", "tdd", "execute-task", "analyze-architecture")
 $missing = @($required | Where-Object { -not (Test-Path -LiteralPath (Join-Path $target ".opencode\skills\$_\SKILL.md")) })
 if ($missing.Count -gt 0) {
   Write-Warning "Missing skills: $($missing -join ', '). grill-with-docs needs grilling + domain-modeling or it breaks."
