@@ -73,16 +73,22 @@ function Copy-TemplateTree {
   $src = Join-Path $source $RelPath
   if (-not (Test-Path -LiteralPath $src)) { return }
   if (Test-Path -LiteralPath $src -PathType Container) {
-    $items = Get-ChildItem -LiteralPath $src
+    $items = Get-ChildItem -LiteralPath $src -Force
     foreach ($item in $items) {
+      # Never copy dependency/VCS directories into the target.
+      if ($item.PSIsContainer -and $item.Name -in @("node_modules", ".git")) { continue }
+      # Never copy opencode runtime artifacts living at .opencode root (opencode/skills CLI
+      # creates these per project; they are not template assets).
+      if (-not $item.PSIsContainer -and $RelPath -eq ".opencode" -and
+          $item.Name -in @("package.json", "package-lock.json", ".gitignore")) { continue }
       Copy-TemplateTree -RelPath (Join-Path $RelPath $item.Name) -Mode $Mode
     }
     return
   }
   $dst = Join-Path $target $RelPath
   if (Test-Path -LiteralPath $dst) {
-    $srcText = Get-Content -LiteralPath $src -Raw -Encoding UTF8
-    $dstText = Get-Content -LiteralPath $dst -Raw -Encoding UTF8
+    $srcText = "$(Get-Content -LiteralPath $src -Raw -Encoding UTF8 -ErrorAction SilentlyContinue)"
+    $dstText = "$(Get-Content -LiteralPath $dst -Raw -Encoding UTF8 -ErrorAction SilentlyContinue)"
     if ($srcText.Trim() -eq $dstText.Trim()) {
       $script:untouched.Add($RelPath)
       return
@@ -95,7 +101,7 @@ function Copy-TemplateTree {
       $script:untouched.Add($RelPath)
     }
   } else {
-    Write-TemplateFile -RelPath $RelPath -Text (Get-Content -LiteralPath $src -Raw -Encoding UTF8)
+    Write-TemplateFile -RelPath $RelPath -Text "$(Get-Content -LiteralPath $src -Raw -Encoding UTF8 -ErrorAction SilentlyContinue)"
     $script:created.Add($RelPath)
   }
 }
@@ -103,14 +109,14 @@ function Copy-TemplateTree {
 function Merge-MarkdownBlock {
   # Idempotent markdown merge: appends/replaces the template inside owt markers.
   param([string]$RelPath)
-  $tpl = Get-Content -LiteralPath (Join-Path $source $RelPath) -Raw -Encoding UTF8
+  $tpl = "$(Get-Content -LiteralPath (Join-Path $source $RelPath) -Raw -Encoding UTF8 -ErrorAction SilentlyContinue)"
   $file = Join-Path $target $RelPath
   if (-not (Test-Path -LiteralPath $file)) {
     Write-TemplateFile -RelPath $RelPath -Text $tpl
     $script:created.Add($RelPath)
     return
   }
-  $content = Get-Content -LiteralPath $file -Raw -Encoding UTF8
+  $content = "$(Get-Content -LiteralPath $file -Raw -Encoding UTF8 -ErrorAction SilentlyContinue)"
   if ($content.Trim() -eq $tpl.Trim()) {
     $script:untouched.Add($RelPath)
     return
@@ -155,14 +161,14 @@ function Merge-GitIgnoreLines {
 function Merge-ContextFile {
   param([string]$RelPath)
   $file = Join-Path $target $RelPath
-  $tpl = Get-Content -LiteralPath (Join-Path $source $RelPath) -Raw -Encoding UTF8
+  $tpl = "$(Get-Content -LiteralPath (Join-Path $source $RelPath) -Raw -Encoding UTF8 -ErrorAction SilentlyContinue)"
   if (-not (Test-Path -LiteralPath $file)) {
     Write-TemplateFile -RelPath $RelPath -Text $tpl
     $script:created.Add($RelPath)
     return
   }
   Backup-TemplateItem -RelPath $RelPath
-  $content = Get-Content -LiteralPath $file -Raw -Encoding UTF8
+  $content = "$(Get-Content -LiteralPath $file -Raw -Encoding UTF8 -ErrorAction SilentlyContinue)"
   if ($content -match "(?m)^## Language\s*$") {
     $script:untouched.Add($RelPath)
     return
@@ -214,7 +220,7 @@ Copy-TemplateTree -RelPath "docs" -Mode "MissingOnly"
 Copy-TemplateTree -RelPath ".opencode" -Mode "Update"
 
 # --- 2. root files --------------------------------------------------------------
-Merge-GitIgnoreLines -RelPath ".gitignore" -Lines @(".opencode/tmp/", ".template-backup/", ".env", "Thumbs.db", ".DS_Store")
+Merge-GitIgnoreLines -RelPath ".gitignore" -Lines @(".opencode/tmp/", ".opencode/node_modules/", ".template-backup/", ".env", "Thumbs.db", ".DS_Store")
 Merge-MarkdownBlock -RelPath "AGENTS.md"
 Merge-ContextFile -RelPath "CONTEXT.md"
 
