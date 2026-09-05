@@ -29,7 +29,7 @@
     },
     "serena": {
       "type": "local",
-      "command": ["serena", "start-mcp-server", "--context", "ide", "--project-from-cwd"],
+      "command": ["serena", "start-mcp-server", "--context", "ide", "--project-from-cwd", "--enable-web-dashboard", "false"],
       "enabled": true,
       "timeout": 30000
     }
