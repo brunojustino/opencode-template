@@ -18,7 +18,7 @@ Keep this file short. It is a router: detailed rules live in the files below and
 ## Tools
 
 - Current library/API docs: use the `context7` MCP tools.
-- Code navigation on larger codebases: prefer Serena's symbol-level tools over reading whole files.
+- Code navigation on larger/unfamiliar source files: `serena_get_symbols_overview` before whole-file reads, `serena_find_symbol` for defs/refs, `serena_search_for_pattern` over Grep for code searches. Built-ins stay default for docs/configs/small files.
 - Never push without explicit user request.
 
 ## External file loading

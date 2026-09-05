@@ -25,7 +25,7 @@ Spec: approved in session
             to serena command args.
        Files/symbols: opencode.template.json (mcp.serena.command)
        Verify: JSON parses (ConvertFrom-Json), args contain the new flag -->
-- [ ] 2. Harden the Serena rule in AGENTS.md
+- [x] 2. Harden the Serena rule in AGENTS.md
   Blocked by: -
   <!-- mini-plan filled at execution time:
        Steps:
