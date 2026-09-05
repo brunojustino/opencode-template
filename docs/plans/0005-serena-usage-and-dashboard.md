@@ -1,6 +1,6 @@
 # Plan: make Serena actually used + stop dashboard spam
 
-Status: approved
+Status: done (closed out 2026-09-04; restart opencode to pick up config + AGENTS.md)
 Origin: user report - "a bunch of serena dashboards open but never see it used even with 200k+ contexts"
 Spec: approved in session
 
@@ -35,7 +35,7 @@ Spec: approved in session
             searches; built-ins stay default for docs/configs/small files).
        Files/symbols: AGENTS.md (## Tools)
        Verify: read-back; wording stays short (AGENTS.md is a router) -->
-- [ ] 3. Verify + close out
+- [x] 3. Verify + close out
   Blocked by: 1, 2
   <!-- mini-plan filled at execution time:
        Steps: tick tasks, commit, note restart requirement.
