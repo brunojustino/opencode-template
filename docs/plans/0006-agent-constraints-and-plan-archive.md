@@ -55,7 +55,7 @@ Ordered; "Blocked by" lists task numbers that must finish first.
          AGENTS.md, CONTEXT.md, README.md
        Verify: opencode.template.json parses as valid JSON; rg external_directory
          matches in template json + rules file + README -->
-- [ ] 3. Docker execution policy + ADR
+- [x] 3. Docker execution policy + ADR
   Blocked by: 2
   <!-- mini-plan filled at execution time:
        Steps:

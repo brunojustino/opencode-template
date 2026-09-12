@@ -6,7 +6,7 @@ Keep this file short. It is a router: detailed rules live in the files below and
 
 - Planning / implementation workflow: @docs/rules/task-execution.md (load before planning or implementing tasks)
 - Git + docs-update conventions: @docs/rules/git-workflow.md (load before any commit)
-- Agent environment constraints (workspace-root wall, Docker execution): @docs/rules/agent-constraints.md (load before touching paths outside the workspace root or running/building/testing project code)
+- Agent environment constraints (workspace-root wall, Docker execution): @docs/rules/agent-constraints.md (load before touching paths outside the workspace root or running/building/testing project code; Docker policy rationale in docs/adr/0002-docker-execution-policy.md)
 - Domain vocabulary: CONTEXT.md (glossary - consult before introducing new terms)
 - Decision records: docs/adr/index.md (check before reversing a recorded decision)
 - Active plans: docs/plans/

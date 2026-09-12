@@ -1,6 +1,7 @@
 # Plan: {name}
 
 Status: draft | approved | in-progress | done
+Runtime: docker | host-waived
 <!-- When the last task is ticked, set Status: done and move this file to
      docs/plans/history/ in the same commit (archived plans are read-only records). -->
 Origin: {grill-with-docs session / issue / link}

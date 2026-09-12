@@ -39,4 +39,4 @@ Projects must be self-sufficient: anything that would require installing a runti
 - What runs in Docker: the project's **runtime** (server, CLI), **builds**, **tests**, and **lint**. All verification commands in plans execute via `docker compose run` / `docker compose exec` - never on the host.
 - Exempt: agent tooling itself (opencode, MCP servers, git). The harness cannot run inside the container it drives. This exemption is structural, not repo-specific.
 - Trade-off accepted: every verification cycle pays container overhead. That is the price of reproducibility.
-- **Waiver**: a project may run on the host only by explicit waiver, recorded as `Runtime: host-waived` in the header of the active plan. No waiver, no host execution.
+- **Waiver**: a project may run on the host only by explicit waiver, recorded as `Runtime: host-waived` in the header of the active plan. No waiver, no host execution. See ADR-0002 for the rationale.
