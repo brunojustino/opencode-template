@@ -35,6 +35,9 @@
     }
   },
   "permission": {
+    "external_directory": {
+      "**": "ask"
+    },
     "doom_loop": "ask",
     "bash": {
       "git add*": "allow",

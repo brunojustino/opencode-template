@@ -255,6 +255,7 @@ Keep `planner` (read-only thinker) everywhere. Optional additions - each agent's
 
 - Databases: dedicated read-only role + `--access-mode=restricted`. The role is the boundary that holds; the flag is the second layer.
 - Read-only agents (planner, arch-analyzer, built-in plan) deny Serena's mutating tools **by name** (`serena_replace_content`, ...): `write/edit: false` only covers built-in tools, MCP tools are permissioned separately. `"doom_loop": "ask"` is the global safety net against any repeat-call loop.
+- Workspace-root wall: `permission.external_directory` is `"ask"` for every path outside the directory opencode was started in - covers built-in and MCP tools alike. Allowlist trusted paths per project (last-match-wins); see `docs/rules/agent-constraints.md`.
 - Credentials never in `opencode.json` (it is meant to be committed) - put them in `.env`, reference via `{env:...}`.
 - Device/emulator MCPs (Android): these control real software state - keep their destructive tools behind `ask` permissions if you enable them.
 

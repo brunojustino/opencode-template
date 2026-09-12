@@ -37,7 +37,7 @@ Ordered; "Blocked by" lists task numbers that must finish first.
          docs/rules/task-execution.md, docs/plans/plan-template.md, CONTEXT.md
        Verify: git status shows renames; docs/plans/ root holds only active plans
          (0006) + plan-template.md; rg "Status: done" in history/ matches 3 files -->
-- [ ] 2. Sandbox rule: workspace-root wall
+- [x] 2. Sandbox rule: workspace-root wall
   Blocked by: 1
   <!-- mini-plan filled at execution time:
        Steps:
