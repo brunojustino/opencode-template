@@ -1,6 +1,6 @@
 # Plan: analyze-architecture capability
 
-Status: approved
+Status: done (closed out 2026-09-12; archived to history/)
 Origin: user request - "generate technical documentation of a project after installing the template"
 Spec: approved in session (skill + subagent + command; docs/architecture/ folder; create + refresh lifecycle)
 

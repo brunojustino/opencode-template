@@ -1,6 +1,6 @@
 # Plan: close Serena edit-tool loophole in read-only agents
 
-Status: approved
+Status: done (closed out 2026-09-12; archived to history/)
 Origin: user report - "planner is getting stuck in loops because of serena mcp"
 Spec: approved in session
 

@@ -21,6 +21,7 @@ One task per approval cycle. The agent never implements multiple tasks without e
    - tick the task checkbox, note deviations
    - `CONTEXT.md` only for newly settled domain terms
    - `docs/adr/` only for hard-to-reverse + surprising + real-trade-off decisions (most tasks: zero ADRs)
+   - if this was the plan's last task: set `Status: done` and move the plan to `docs/plans/history/` in the same commit
 6. **Commit**: one task = one commit, including its doc updates.
 7. **Stop and report**: changes, verification results, commit hash. Wait for approval before the next task.
 
