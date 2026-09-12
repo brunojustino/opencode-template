@@ -1,6 +1,6 @@
 # Plan: agent environment constraints + plan archive convention
 
-Status: draft
+Status: done (closed out 2026-09-12; archived to history/)
 Origin: grill-with-docs session 2026-09-12 (user: sandbox boundary, docker execution, plans history)
 Spec: approved in session (Q1-Q7 round 1 + Q1-Q7 round 2, all recommendations accepted)
 
@@ -70,7 +70,7 @@ Ordered; "Blocked by" lists task numbers that must finish first.
          docs/adr/0002-docker-execution-policy.md, docs/adr/index.md, AGENTS.md
        Verify: rg "host-waived" matches rules file + plan template + ADR; index row
          present; rg "agent-constraints" in AGENTS.md -->
-- [ ] 4. Verify and close out
+- [x] 4. Verify and close out
   Blocked by: 3
   <!-- mini-plan filled at execution time:
        Steps: full grep sweep across touched files, tick plan, move this plan to
