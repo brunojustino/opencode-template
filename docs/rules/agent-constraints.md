@@ -1,3 +1,4 @@
+<!-- owt:start -->
 # Agent Environment Constraints
 
 Load this file before touching anything outside the workspace root, or before running/building/testing project code.
@@ -40,3 +41,4 @@ Projects must be self-sufficient: anything that would require installing a runti
 - Exempt: agent tooling itself (opencode, MCP servers, git). The harness cannot run inside the container it drives. This exemption is structural, not repo-specific.
 - Trade-off accepted: every verification cycle pays container overhead. That is the price of reproducibility.
 - **Waiver**: a project may run on the host only by explicit waiver, recorded as `Runtime: host-waived` in the header of the active plan. No waiver, no host execution. See ADR-0002 for the rationale.
+<!-- owt:end -->

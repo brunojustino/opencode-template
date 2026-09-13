@@ -1,3 +1,4 @@
+<!-- owt:start -->
 # Task Execution Workflow
 
 Load this file when planning or implementing tasks. The short version lives in AGENTS.md; this file is the authoritative procedure.
@@ -30,3 +31,4 @@ One task per approval cycle. The agent never implements multiple tasks without e
 - Verification fails twice in a row: stop, report findings, ask how to proceed.
 - Task grows beyond its mini-plan: split into new tickets, get approval, then continue.
 - A decision pops up mid-task: if it passes the ADR gates, park it - finish the task, record it in the commit's docs update.
+<!-- owt:end -->

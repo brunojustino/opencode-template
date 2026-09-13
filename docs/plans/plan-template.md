@@ -1,3 +1,4 @@
+<!-- owt:start -->
 # Plan: {name}
 
 Status: draft | approved | in-progress | done
@@ -23,3 +24,4 @@ Ordered; "Blocked by" lists task numbers that must finish first.
 ## Notes
 
 Deviations, settled terminology (also mirrored to CONTEXT.md), ADRs produced.
+<!-- owt:end -->
