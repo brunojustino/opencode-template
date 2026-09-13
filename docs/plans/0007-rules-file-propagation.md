@@ -33,7 +33,7 @@ Ordered; "Blocked by" lists task numbers that must finish first.
          docs/plans/plan-template.md
        Verify: rg -c "owt:start" matches 4 in those files; files still render as
          markdown (markers are comments) -->
-- [ ] 2. Installer: Merge-RulesFile + wiring
+- [x] 2. Installer: Merge-RulesFile + wiring
   Blocked by: 1
   <!-- mini-plan filled at execution time:
        Steps:

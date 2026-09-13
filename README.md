@@ -39,7 +39,7 @@ The installer **backs up first, then merges** - nothing can be lost:
 - **Backup**: every existing file it touches is copied to `.template-backup\<timestamp>\<path>` before anything is written (re-runs create a new timestamped folder, never clobbering previous backups). Restore = copy files back.
 - **Merges**: `AGENTS.md` (your content preserved, template router appended inside `<!-- owt:start/end -->` markers - idempotent on re-runs), `CONTEXT.md` (ensures a `## Language` section; your terms untouched), `.gitignore` (appends missing entries), `opencode.json` (JSON merge, missing keys only, plus a `opencode.json.pre-install.bak`)
 - **Updates**: `.opencode/skills/**` and `.opencode/agent/` to the template version (old copies in the backup)
-- **Never writes**: your existing `docs/` files (created only if missing) and `.env` (backed up every run, never written - keys stay verbatim)
+- **Never writes**: your existing `docs/` files (created only if missing - except template-owned rules files `docs/rules/*.md` + `docs/plans/plan-template.md`, which are refreshed inside owt markers, backup-first) and `.env` (backed up every run, never written - keys stay verbatim)
 - A write-guard aborts rather than overwriting any file that was not backed up in that run
 - Sanity-checks the skill dependency chain; auto-installs Serena when `uv` is present
 

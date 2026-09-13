@@ -9,7 +9,9 @@
       .template-backup\<timestamp>\<relative path> (re-runs create a new timestamped folder).
     - AGENTS.md / CONTEXT.md / .gitignore are merged into (idempotent markers / line merge).
     - .opencode skills + agents are updated to the template version.
-    - Your docs/ files and .env are created only if missing; existing ones are never written.
+    - Template-owned rules files (docs/rules/*.md, docs/plans/plan-template.md) are
+      refreshed inside owt markers (backup-first); other docs/ files are created
+      only if missing and never written.
     - opencode.json is JSON-merged (missing keys only) with a .pre-install.bak beside it.
     - A write-guard aborts rather than writing to any file not backed up in this run.
 
@@ -186,6 +188,30 @@ Pure vocabulary only - no implementation details, no specs. -->
   $script:merged.Add($RelPath)
 }
 
+function Merge-RulesFile {
+  # Template-owned rules files: refresh inside owt markers, backup-first.
+  # Marker-less files are stale template installs -> backup + replace with the
+  # marker-wrapped template version (user content is diffable in .template-backup).
+  param([string[]]$RelPaths)
+  foreach ($RelPath in $RelPaths) {
+    $file = Join-Path $target $RelPath
+    if (-not (Test-Path -LiteralPath $file)) {
+      Merge-MarkdownBlock -RelPath $RelPath
+      continue
+    }
+    $content = "$(Get-Content -LiteralPath $file -Raw -Encoding UTF8 -ErrorAction SilentlyContinue)"
+    if ($content.Contains("<!-- owt:start -->") -and $content.Contains("<!-- owt:end -->")) {
+      Merge-MarkdownBlock -RelPath $RelPath
+    } else {
+      Backup-TemplateItem -RelPath $RelPath
+      $tpl = "$(Get-Content -LiteralPath (Join-Path $source $RelPath) -Raw -Encoding UTF8 -ErrorAction SilentlyContinue)"
+      Write-TemplateFile -RelPath $RelPath -Text $tpl
+      $script:merged.Add($RelPath)
+      Write-Host "  ~ $RelPath was marker-less (stale template install) - replaced; original in .template-backup" -ForegroundColor Yellow
+    }
+  }
+}
+
 function Merge-Json {
   # Deep-merge: add keys from $Tpl that are missing in $Dst. Never overwrites existing values.
   param($Dst, $Tpl)
@@ -214,8 +240,15 @@ if (Test-Path -LiteralPath (Join-Path $target ".git")) {
 }
 
 # --- 1. trees -------------------------------------------------------------------
-# docs: create if missing, never modify existing project docs
+# docs: create if missing, never modify existing project docs - except the
+# template-owned rules files refreshed by Merge-RulesFile below.
 Copy-TemplateTree -RelPath "docs" -Mode "MissingOnly"
+Merge-RulesFile -RelPaths @(
+  "docs\rules\task-execution.md",
+  "docs\rules\git-workflow.md",
+  "docs\rules\agent-constraints.md",
+  "docs\plans\plan-template.md"
+)
 # .opencode skills + agent: versioned template assets -> backup + update
 Copy-TemplateTree -RelPath ".opencode" -Mode "Update"
 
