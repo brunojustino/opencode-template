@@ -1,6 +1,6 @@
 # Plan: propagate template-owned rules files on re-install
 
-Status: draft
+Status: done (closed out 2026-09-12; archived to history/)
 Origin: user follow-up to plan 0006 - "old installs drift" (rules files never update on re-install)
 Spec: approved in session (Q1(a) scope, Q2(a) owt markers + stale migration, Q3(a) skip CONTEXT.md, Q4(a) wording fix)
 
@@ -56,7 +56,7 @@ Ordered; "Blocked by" lists task numbers that must finish first.
          content correct; scratch install #2 after modifying a rules file outside
          markers -> user text preserved + block refreshed; stale marker-less file ->
          replaced + backed up -->
-- [ ] 3. Verify end-to-end and close out
+- [x] 3. Verify end-to-end and close out
   Blocked by: 2
   <!-- mini-plan filled at execution time:
        Steps: full scenario matrix (fresh, re-install with user edits, stale
